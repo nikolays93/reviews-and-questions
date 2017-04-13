@@ -129,7 +129,8 @@ class WPForm {
        * set values
        */
       $active_name = $check_active ? $input[$check_active] : str_replace('[]', '', $input['name']);
-      $active_value = _isset_false($active[$active_name]);
+      $active_value = ( is_array($active) && isset($active[$active_name]) ) ?
+         $active[$active_name] : false;
 
       $entry = '';
       if($input['type'] == 'checkbox' || $input['type'] == 'radio'){
