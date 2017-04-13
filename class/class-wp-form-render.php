@@ -4,7 +4,7 @@ namespace RQ;
  * Class Name: WPForm ( :: render )
  * Class URI: https://github.com/nikolays93/WPForm
  * Description: render forms as wordpress fields
- * Version: 1.0
+ * Version: 1.1
  * Author: NikolayS93
  * Author URI: https://vk.com/nikolays_93
  * License: GNU General Public License v2 or later
@@ -20,14 +20,13 @@ function _isset_default(&$var, $default, $unset = false){
 function _isset_false(&$var, $unset = false){ return _isset_default( $var, false, $unset ); }
 function _isset_empty(&$var, $unset = false){ return _isset_default( $var, '', $unset ); }
 
-
+/**
+ * change names for wordpress options
+ * @param  array  $inputs      rendered inputs
+ * @param  string $option_name name of wordpress option ( @see get_option() )
+ * @return array               filtred inputs
+ */
 if( ! has_filter( 'dt_admin_options' ) ){
-  /**
-   * change names for wordpress options
-   * @param  array  $inputs      rendered inputs
-   * @param  string $option_name name of wordpress option ( @see get_option() )
-   * @return array               filtred inputs
-   */
   function admin_page_options_filter( $inputs, $option_name = false ){
     if( ! $option_name )
       $option_name = _isset_false($_GET['page']);
@@ -50,32 +49,6 @@ if( ! has_filter( 'dt_admin_options' ) ){
 }
 
 class WPForm {
-  private static function is_checked( $name, $value, $active, $default ){
-    if( !$active || $active === 'false' || $active === 'off' || $active === '0' )
-      $active = false;
-
-    if( $active || $active === 'true'  || $active === 'on'  || $active === '1' )
-      $active = true;
-
-    if( $active || $default ){
-      if( $value ){ // str or bool
-        if( is_array($active) ){
-          if( in_array($value, $active) )
-            return true;
-        }
-        else {
-          if( $value == $active || $value === true )
-            return true;
-        }
-      }
-      else {
-        if( $active || $default )
-            return true;
-      }
-    }
-    return false;
-  }
-
   /**
    * Render form items
    * @param  boolean $render_data array with items ( id, name, type, options..)
@@ -160,7 +133,7 @@ class WPForm {
 
       $entry = '';
       if($input['type'] == 'checkbox' || $input['type'] == 'radio'){
-        $entry = self::is_checked( $active_name, $value, $active_value, $default );
+        $entry = self::is_checked( $value, $active_value, $default );
       }
       elseif( $input['type'] == 'select' ){
         $entry = ($active_value) ? $active_value : $default;
@@ -224,7 +197,42 @@ class WPForm {
     else
       echo $result;
   }
-  
+
+  /**
+   * check if is checked ( called( $value, $active_value, $default ) )
+   * @param  mixed         $value   ['value'] array setting (string || boolean)(!isset ? false)
+   * @param  string||false $active  value from $active option
+   * @param  mixed         $default ['default'] array setting (string || boolean)(!isset ? false)
+   * 
+   * @return boolean       checked or not
+   */
+  private static function is_checked( $value, $active, $default ){
+    $checked = ( $active === false ) ? false : true;
+    if( $active === 'false' || $active === 'off' || $active === '0' )
+      $active = false;
+
+    if( $active === 'true'  || $active === 'on'  || $active === '1' )
+      $active = true;
+
+    if( $active || $default ){
+      if( $value ){
+        if( is_array($active) ){
+          if( in_array($value, $active) )
+            return true;
+        }
+        else {
+          if( $value == $active || $value === true )
+            return true;
+        }
+      }
+      else {
+        if( $active || (!$checked && $default) )
+          return true;
+      }
+      return false;
+    }
+  }
+
   public static function render_checkbox( $input, $checked, $is_table, $label = '' ){
     $result = '';
 
