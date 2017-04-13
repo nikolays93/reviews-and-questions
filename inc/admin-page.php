@@ -36,12 +36,28 @@ function raq_page_render(){
     	true
     	);
 }
-
-// add_filter( RQ_PAGE_SLUG . '_columns', function(){return 2;} );
-// $page->add_metabox( 'handle', 'metabox label', 'metabox_body', 'side');
-// function metabox_body(){
-// 	echo "Its metabox render body function. How easy? ";
-// 	submit_button();
-// }
+function admin_review_fields( $fields, $option_name ){
+    $defaults = array('your-name', 'your-phone', 'your-email');
+    foreach ($fields as &$field) {
+        $field['type'] = 'checkbox';
+        if( in_array($field['id'], $defaults) )
+            $field['default'] = 'on';
+            
+    }
+    return $fields;
+}
+add_filter( RQ_PAGE_SLUG . '_columns', function(){return 2;} );
+$page->add_metabox( 'fields_side', 'Fields', 'RQ\metabox_body', 'side');
+function metabox_body(){
+    add_filter( 'dt_admin_options', 'RQ\admin_review_fields', 5, 2 );
+    $active = get_option( RQ_PAGE_SLUG );
+    if( isset($active['inputs']) )
+        $active = $active['inputs'];
+    WPForm::render(
+        apply_filters( 'dt_admin_options', _review_fields(), RQ_PAGE_SLUG . '[inputs]'),
+        $active,
+        true
+        );
+}
 
 // add_action( $page_slug . '_inside_side_container', 'submit_button', 20 );

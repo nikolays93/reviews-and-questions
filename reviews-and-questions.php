@@ -45,33 +45,33 @@ function _review_fields(){
         array(
             'id' => 'your-name',
             'type' => 'text',
-            'label' => 'Имя автора',
+            'label' => 'Ваше имя',
             ),
         array(
             'id' => 'your-phone',
             'type' => 'text',
-            'label' => 'Номер телефона',
+            'label' => 'Ваш номер телефона',
             ),
         array(
             'id' => 'your-email',
             'type' => 'text',
-            'label' => 'Емэйл',
+            'label' => 'Ваш е-мэйл',
             ),
-        // array(
-        //  'id' => '_your_city',
-        //  'type' => 'text',
-        //  'label' => 'Город',
-        //  ),
+        array(
+           'id' => 'your_city',
+           'type' => 'text',
+           'label' => 'Город',
+           ),
         // array(
         //  'id' => 'your_review_rating',
         //  'type' => 'text',
         //  'label' => 'Рэйтинг',
         //  ),
-        // array(
-        //  'id' => 'your-work',
-        //  'type' => 'text',
-        //  'label' => 'Работа',
-        //  ),
+        array(
+         'id' => 'your-work',
+         'type' => 'text',
+         'label' => 'Организация',
+         ),
         // array(
         //  'id' => 'your-custom',
         //  'type' => 'text',

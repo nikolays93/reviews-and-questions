@@ -2,7 +2,7 @@
 
 todo:
 - set admin page
--- change fields
--- change cpt
+	* change fields
+	* change cpt
 - add front shortcodes
 - rewrite documentation
