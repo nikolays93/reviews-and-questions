@@ -10,7 +10,7 @@ function create_post_review($contact_form){
     $submission = \WPCF7_Submission::get_instance();
     $posted_data = $submission->get_posted_data();
 
-    if( isset($posted_data[RQ_HOOK_NAME]) )
+    if( ! isset($posted_data[RQ_HOOK_NAME]) )
         return;
 
     $meta = array();
@@ -26,8 +26,7 @@ function create_post_review($contact_form){
     $meta['user_ip'] = $_SERVER['REMOTE_ADDR'];
     $date = $meta['posted_date'] = date('d.m.Y');
 
-    $fields = apply_filters( 'active_review_fields', _review_fields() );
-    foreach ($fields as $field) {
+    foreach (_review_fields() as $field) {
         $key = $field['id'];
         if( isset( $posted_data[ $key ] ) && $value = $posted_data[ $key ] ){
             $meta[RQ_META_NAME][ $key ] = sanitize_text_field($value);

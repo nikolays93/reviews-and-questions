@@ -45,10 +45,12 @@ if( ! has_filter( 'dt_admin_options' ) ){
     }
     return $inputs;
   }
-  add_filter( 'dt_admin_options', 'admin_page_options_filter', 10, 2 );
+  add_filter( 'dt_admin_options', 'RQ\admin_page_options_filter', 10, 2 );
 }
 
 class WPForm {
+  static protected $clear_value;
+
   /**
    * Render form items
    * @param  boolean $render_data array with items ( id, name, type, options..)
@@ -80,9 +82,12 @@ class WPForm {
       'item_wrap' => array('<p>', '</p>'),
       'form_wrap' => array('<table class="table form-table"><tbody>', '</tbody></table>'),
       'label_tag' => 'th',
-      'hide_desc' => false
+      'hide_desc' => false,
+      'clear_value' => 'false'
       );
     $args = array_merge($default_args, $args);
+
+    self::$clear_value = esc_attr( $args['clear_value'] );
 
     if( $args['item_wrap'] === false )
       $args['item_wrap'] = array('', '');
@@ -243,9 +248,10 @@ class WPForm {
     if( $checked )
       $input['checked'] = 'true';
 
-    $hval = apply_filters( 'clear_checkbox_value', false );
-    if( $hval !== false )
-      $result .= "<input name='{$input['name']}' type='hidden' value='{$hval}'>\n";
+    // if $clear_value === false dont use defaults (couse default + empty value = true)
+    $cv = self::$clear_value;
+    if( false !== $cv )
+      $result .= "<input name='{$input['name']}' type='hidden' value='{$cv}'>\n";
 
     $result .= "<input";
     foreach ($input as $attr => $val) {

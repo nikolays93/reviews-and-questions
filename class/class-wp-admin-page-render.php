@@ -26,7 +26,7 @@ class WPAdminPageRender
 	protected $page_content_cb = '';
 	protected $page_valid_cb = '';
 
-	protected $metabox = array();
+	protected $metaboxes = array();
 
 	function __construct( $page_slug, $args, $page_content_cb, $option_name = false, $valid_cb = false )
 	{
@@ -67,20 +67,27 @@ class WPAdminPageRender
 	}
 
 	function _metabox(){
-		extract($this->metabox);
-		add_meta_box( $handle, $label, $render_cb, $this->screen, $position, $priority);
+		foreach ($this->metaboxes as $metabox) {
+			extract($metabox);
+			add_meta_box( $handle, $label, $render_cb, $this->screen, $position, $priority);
+		}
 	}
+
 	function add_metabox( $handle, $label, $render_cb, $position = 'normal', $priority = 'high'){
-		$this->metabox = array(
+		$this->metaboxes[] = array(
 			'handle' => $handle,
 			'label' => $label,
 			'render_cb' => $render_cb,
 			'position' => $position,
 			'priority' => $priority
 			);
+	}
 
+	function set_metaboxes(){
 		add_action( 'add_meta_boxes', array($this, '_metabox') );
 	}
+	
+
 	/**
 	 * Init actions for created page
 	 */
@@ -88,8 +95,11 @@ class WPAdminPageRender
 		add_action( $this->page . '_inside_page_content', array($this, 'page_render'), 10);
 
 		add_action( $this->page . '_inside_side_container', array($this, 'side_render'), 10 );
-		add_action( $this->page . '_inside_side_container', 'submit_button', 20 );
-
+		remove_action( $this->page . '_inside_side_container', 'submit_button', 20 );
+		add_action( $this->page . '_inside_side_container', function(){
+			submit_button( 'Обновить код' );
+		}, 20 );
+		
 		add_action( $this->page . '_inside_normal_container', array($this, 'normal_render'), 10 );
 		add_action( $this->page . '_inside_advanced_container', array($this, 'advanced_render'), 10 );
 

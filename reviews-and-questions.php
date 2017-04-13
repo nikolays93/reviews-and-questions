@@ -45,17 +45,17 @@ function _review_fields(){
         array(
             'id' => 'your-name',
             'type' => 'text',
-            'label' => 'Ваше имя',
+            'label' => 'Имя',
             ),
         array(
             'id' => 'your-phone',
             'type' => 'text',
-            'label' => 'Ваш номер телефона',
+            'label' => 'Телефон',
             ),
         array(
             'id' => 'your-email',
             'type' => 'text',
-            'label' => 'Ваш е-мэйл',
+            'label' => 'Email',
             ),
         array(
            'id' => 'your_city',
