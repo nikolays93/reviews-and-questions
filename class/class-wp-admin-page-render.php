@@ -230,11 +230,29 @@ class WPAdminPageRender
 	 * @return array $inputs filtred data for save
 	 */
 	function validate_options( $inputs ){
-		foreach ($inputs as $key => &$value) {
-			$value = sanitize_text_field( $value );
-			if( empty($value) )
-				unset($inputs[ $key ]);
-		}
+		$debug = array();
+		$debug['before'] = $inputs;
+
+		$inputs = array_map_recursive( 'sanitize_text_field', $inputs );
+		$inputs = array_filter($inputs);
+
+		// foreach ($inputs as $key => &$value) {
+		// 	$value = sanitize_text_field( $value );
+		// 	if( empty($value) )
+		// 		unset($inputs[ $key ]);
+		// }
+
+		$debug['after'] = $inputs;
+		file_put_contents(__DIR__.'/valid.log', print_r($debug, 1));
+
 		return $inputs;
 	}
+}
+
+function array_map_recursive($callback, $array){
+	$func = function ($item) use (&$func, &$callback) {
+		return is_array($item) ? array_map($func, $item) : call_user_func($callback, $item);
+	};
+
+	return array_map($func, $array);
 }
