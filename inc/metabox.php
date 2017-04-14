@@ -27,7 +27,14 @@ function metabox_action(){
     $boxes->add_fields( RQ_META_NAME );
 }
 function metabox_render($post, $data){
-    WPForm::render( _review_fields(), get_post_meta( $post->ID, RQ_META_NAME, true ), true );
+    
+    $fields = _review_fields();
+    foreach ($fields as &$field) {
+        $field['name'] = RQ_META_NAME . '[' . $field['id'] . ']';
+        $field['check_active'] = 'id';
+    }
+    
+    WPForm::render( $fields, get_post_meta( $post->ID, RQ_META_NAME, true ), true );
     wp_nonce_field( $data['args'][0], $data['args'][0].'_nonce' );
 }
 
