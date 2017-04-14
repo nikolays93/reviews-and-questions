@@ -34,13 +34,15 @@ if( ! has_filter( 'dt_admin_options' ) ){
     if( ! $option_name )
       return $inputs;
 
-    if( isset($inputs['type']) )
+    if( isset($inputs['id']) )
         $inputs = array($inputs);
 
     foreach ( $inputs as &$input ) {
-      if( ! isset($input['name']) )
+      if( isset($input['name']) )
+        $input['name'] = "{$option_name}[{$input['name']}]";
+      else
         $input['name'] = "{$option_name}[{$input['id']}]";
-
+      
       $input['check_active'] = 'id';
     }
     return $inputs;
@@ -50,6 +52,68 @@ if( ! has_filter( 'dt_admin_options' ) ){
 
 class WPForm {
   static protected $clear_value;
+
+  /**
+   * EXPEREMENTAL!
+   * Get ID => Default values from $render_data
+   * @param  array() $render_data
+   * @return array(array(ID=>default),ar..)
+   */
+  public static function defaults( $render_data ){
+    $defaults = array();
+    if(empty($render_data))
+      return $defaults;
+
+    if( isset($render_data['id']) )
+        $render_data = array($render_data);
+
+    foreach ($render_data as $input) {
+      if(isset($input['default']) && $input['default']){
+        $input['id'] = str_replace('][', '_', $input['id']);
+        $defaults[$input['id']] = $input['default'];
+      }
+    }
+
+    return $defaults;
+  }
+  
+  /**
+   * EXPEREMENTAL! todo: add recursive handle
+   * @param  string  $option_name      
+   * @param  string  $sub_name         $option_name[$sub_name]
+   * @param  boolean $is_admin_options recursive split value array key with main array
+   * @return array                     installed options
+   */
+  public static function active($option_name, $sub_name = false, $is_admin_options = false){
+    $active = get_option( $option_name, array() );
+    if( $sub_name && isset($active[$sub_name]) && is_array($active[$sub_name]) )
+      $active = $active[$sub_name];
+
+    if( $is_admin_options === true ){
+      $result = array();
+      foreach ($active as $key => $value) {
+        if( is_array($value) ){
+          foreach ($value as $key2 => $value2) {
+            $result[$key . '_' . $key2] = $value2;
+          }
+        }
+        else {
+          $result[$key] = $value;
+        }
+      }
+
+      return $result;
+      // function self_function($active){
+      //   foreach ($active as &$key => &$value) {
+      //     if( is_array($value) ){
+      //       $key = 
+      //     }
+      //   }
+      // }
+    }
+
+    return $active;
+  }
 
   /**
    * Render form items
@@ -75,7 +139,7 @@ class WPForm {
       return false;
     }
     
-    if( isset($render_data['type']) )
+    if( isset($render_data['id']) )
         $render_data = array($render_data);
 
     $default_args = array(
@@ -129,6 +193,8 @@ class WPForm {
 
       if( !isset($input['name']) )
           $input['name'] = _isset_empty($input['id']);
+
+      $input['id'] = str_replace('][', '_', $input['id']);
       
       /**
        * set values

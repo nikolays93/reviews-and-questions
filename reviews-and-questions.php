@@ -86,8 +86,8 @@ function _review_fields(){
     return $review_fields;
 }
 
-include_once RQ_DIR . 'inc/admin-page.php';
 include_once RQ_DIR . 'inc/post-type.php';
+include_once RQ_DIR . 'inc/admin-page.php';
 include_once RQ_DIR . 'inc/metabox.php';
 include_once RQ_DIR . 'inc/create-post.php';
 include_once RQ_DIR . 'inc/shortcodes.php';

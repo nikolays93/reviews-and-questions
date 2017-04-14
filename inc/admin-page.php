@@ -10,7 +10,7 @@ $page_render = new WPAdminPageRender(RQ_PAGE_SLUG, array(
     ), 'RQ\raq_page_render' );
 
 function raq_page_render(){
-    var_dump(get_option(RQ_PAGE_SLUG));
+    // var_dump(get_option(RQ_PAGE_SLUG));
     return false;
     $inputs = array(
     	array(
@@ -36,7 +36,7 @@ function raq_page_render(){
     	);
 }
 
-function admin_review_fields( $fields, $option_name ){
+function admin_review_fields( $fields ){
     $defaults = array('your-name', 'your-phone', 'your-email');
     foreach ($fields as &$field) {
         $field['type'] = 'checkbox';
@@ -54,12 +54,11 @@ add_filter( RQ_PAGE_SLUG . '_columns', function(){return 2;} );
 
 $page_render->add_metabox( 'fields_side', 'Fields', 'RQ\metabox_body', 'side');
 function metabox_body(){
-    add_filter( 'dt_admin_options', 'RQ\admin_review_fields', 5, 2 );
     $active = get_option( RQ_PAGE_SLUG );
     if( isset($active['inputs']) )
         $active = $active['inputs'];
     WPForm::render(
-        apply_filters( 'dt_admin_options', _review_fields(), RQ_PAGE_SLUG . '[inputs]'),
+        apply_filters( 'dt_admin_options', admin_review_fields(_review_fields()), RQ_PAGE_SLUG . '[inputs]'),
         $active,
         true
         );
@@ -89,20 +88,25 @@ function wpcf7_shortcodes(){
 
         echo "<p><label for='wpcf-template'> Вставьте этот код в шаблон формы 'Contact Form 7' для создания формы отправки сообщения: </label></p><textarea id='wpcf-template' cols=131 rows=8 style='width:100%;'>".esc_html( $code )."</textarea>";
     }
+    if($code == '')
+        echo "Установите нужные параметры и сохраните изменения";
+}
 
-   
-    
+$page_render->add_metabox( 'p_type', 'Post Type Settings', 'RQ\post_type_box_callback', 'normal');
+function post_type_box_callback(){
+    global $raq_post_type;
 
-    // var_dump($realy_active);
-    // $active = isset($active_settings['inputs']) ? array_keys($active_settings['inputs']) : array();
-    // $fields = array();
+    // var_dump( WPForm::defaults($raq_post_type) );
 
-    // foreach ($all_fields as $field) {
-    //     if( in_array($field['id'], $active) )
-    //         $fields[] = $field;
-    // }
-    // return $fields;
+    echo "<pre>";
+    var_dump(WPForm::active(RQ_PAGE_SLUG, 'post_type'));
+    echo "</pre>";
 
+    WPForm::render(
+        apply_filters( 'dt_admin_options', $raq_post_type, RQ_PAGE_SLUG . '[post_type]'),
+        WPForm::active(RQ_PAGE_SLUG, 'post_type', true),
+        true
+        );
 }
 
 $page_render->set_metaboxes();

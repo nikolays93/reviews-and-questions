@@ -4,7 +4,7 @@ namespace RQ;
  * Class Name: WPAdminPageRender
  * Class URI: https://github.com/nikolays93/classes.git
  * Description: Create a new custom admin page.
- * Version: 1.0
+ * Version: 1.1
  * Author: NikolayS93
  * Author URI: https://vk.com/nikolays_93
  * License: GNU General Public License v2 or later
@@ -95,10 +95,6 @@ class WPAdminPageRender
 		add_action( $this->page . '_inside_page_content', array($this, 'page_render'), 10);
 
 		add_action( $this->page . '_inside_side_container', array($this, 'side_render'), 10 );
-		remove_action( $this->page . '_inside_side_container', 'submit_button', 20 );
-		add_action( $this->page . '_inside_side_container', function(){
-			submit_button( 'Обновить код' );
-		}, 20 );
 		
 		add_action( $this->page . '_inside_normal_container', array($this, 'normal_render'), 10 );
 		add_action( $this->page . '_inside_advanced_container', array($this, 'advanced_render'), 10 );
@@ -244,7 +240,7 @@ class WPAdminPageRender
 		// $debug['before'] = $inputs;
 
 		$inputs = array_map_recursive( 'sanitize_text_field', $inputs );
-		$inputs = array_filter($inputs);
+		$inputs = array_filter_recursive($inputs);
 
 		// $debug['after'] = $inputs;
 		// file_put_contents(__DIR__.'/valid.log', print_r($debug, 1));
@@ -253,6 +249,14 @@ class WPAdminPageRender
 	}
 }
 
+function array_filter_recursive($input){
+	foreach ($input as &$value) {
+		if ( is_array($value) )
+			$value = array_filter_recursive($value);
+	}
+
+	return array_filter($input);
+}
 function array_map_recursive($callback, $array){
 	$func = function ($item) use (&$func, &$callback) {
 		return is_array($item) ? array_map($func, $item) : call_user_func($callback, $item);
