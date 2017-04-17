@@ -1,14 +1,13 @@
 <?php
 /*
 Plugin Name: R&Q (Reviews And Questions)
-Description: Description
-Plugin URI: http://#
-Author: Author
-Author URI: http://#
-Version: 1.0
-License: GPL2
-Text Domain: Text Domain
-Domain Path: Domain Path
+Description: Add site reviews and questions support.
+Plugin URI: https://github.com/nikolays93/reviews-and-questions.git
+Author: NikolayS93
+Author URI: https://vk.com/nikolays_93
+Version: 1.0 alpha
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
 */
 
 /*
@@ -88,7 +87,7 @@ function _review_fields(){
 
 include_once RQ_DIR . 'inc/post-type.php';
 include_once RQ_DIR . 'inc/admin-page.php';
-include_once RQ_DIR . 'inc/metabox.php';
+// include_once RQ_DIR . 'inc/metabox.php';
 include_once RQ_DIR . 'inc/create-post.php';
 include_once RQ_DIR . 'inc/shortcodes.php';
 

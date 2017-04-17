@@ -3,6 +3,77 @@ namespace RQ;
 
 global $raq_post_type;
 
+/**
+ * Metabox
+ */
+add_action('edit_form_after_title', 'RQ\resort_boxes' );
+
+add_action( 'load-post.php',     'RQ\metabox_action' );
+add_action( 'load-post-new.php', 'RQ\metabox_action' );
+
+function resort_boxes(){
+    global $post, $wp_meta_boxes;
+
+    if( $post->post_type == RQ_TYPE ){
+        do_meta_boxes(get_current_screen(), 'advanced', $post);
+        unset($wp_meta_boxes[get_post_type($post)]['advanced']);
+    }
+}
+function metabox_action(){
+    $screen = get_current_screen();
+    if( !isset($screen->post_type) || $screen->post_type != RQ_TYPE )
+        return false;
+
+    $boxes = new WPPostBoxes();
+    $boxes->add_box('Отзыв', 'RQ\metabox_render', false, 'high' );
+    $boxes->add_fields( RQ_META_NAME );
+}
+function metabox_render($post, $data){
+    
+    $installedInputs = WPForm::active(RQ_PAGE_SLUG, 'inputs', true);
+    foreach ($installedInputs as $key => $value) {
+        if($value == 'false' || $value == 'off' || ! $value )
+            unset($installedInputs[$key]);
+    }
+    $installed = array_keys($installedInputs);
+
+    $fields = _review_fields();
+    foreach ($fields as $key => &$field) {
+        if( in_array($field['id'], $installed) ){
+            $field['name'] = RQ_META_NAME . '[' . $field['id'] . ']';
+            $field['check_active'] = 'id'; 
+        }
+        else {
+           unset($fields[$key]);
+        }
+    }
+    
+    WPForm::render( $fields, get_post_meta( $post->ID, RQ_META_NAME, true ), true );
+    wp_nonce_field( $data['args'][0], $data['args'][0].'_nonce' );
+}
+
+/**
+ * Custom Excerpt Meta Box
+ */
+add_action( 'add_meta_boxes' , 'RQ\remove_postexcerpt_box', 99 );
+add_action( 'add_meta_boxes',  'RQ\excerpt_box_action' );
+
+function remove_postexcerpt_box(){
+    remove_meta_box( 'postexcerpt' , RQ_TYPE, 'normal' );
+}
+function excerpt_box_action(){
+    add_meta_box('raq_postexcerpt', __( 'Ответ администратора' ), 'RQ\excerpt_box_custom', RQ_TYPE, 'normal');
+}
+function excerpt_box_custom(){
+    global $post;
+
+    echo "<label class='screen-reader-text' for='excerpt'> {_('Excerpt')} </label>
+    <textarea rows='1' cols='40' name='excerpt' tabindex='6' id='excerpt'>{$post->post_excerpt}</textarea>";
+}
+
+/**
+ * Post Type Fields
+ */
 $raq_post_type = array(
     array( 'id' => 'name',
         'type'=> 'text',
@@ -140,7 +211,7 @@ $raq_post_type = array(
  * Register Post Type
  */
 add_action('init', 'RQ\register_review_type' );
-add_action( 'contextual_help', 'RQ\add_review_help_text', 10, 3 );
+// add_action( 'contextual_help', 'RQ\add_review_help_text', 10, 3 );
 
 function register_review_type(){
     $labels = array(
