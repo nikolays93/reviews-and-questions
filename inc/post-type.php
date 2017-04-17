@@ -35,21 +35,28 @@ function metabox_render($post, $data){
         if($value == 'false' || $value == 'off' || ! $value )
             unset($installedInputs[$key]);
     }
-    $installed = array_keys($installedInputs);
+    if( sizeof($installedInputs) ){
+        $installed = array_keys($installedInputs);
+        $fields = _review_fields();
+        foreach ($fields as $key => &$field) {
+            if( in_array($field['id'], $installed) ){
+                $field['name'] = RQ_META_NAME . '[' . $field['id'] . ']';
+                $field['check_active'] = 'id'; 
+            }
+            else {
+               unset($fields[$key]);
+           }
+       }
 
-    $fields = _review_fields();
-    foreach ($fields as $key => &$field) {
-        if( in_array($field['id'], $installed) ){
-            $field['name'] = RQ_META_NAME . '[' . $field['id'] . ']';
-            $field['check_active'] = 'id'; 
-        }
-        else {
-           unset($fields[$key]);
-        }
+       WPForm::render( $fields, get_post_meta( $post->ID, RQ_META_NAME, true ), true );
+       wp_nonce_field( $data['args'][0], $data['args'][0].'_nonce' );
+    }
+    else {
+        echo 'Параметры отзыва не установлены или не требуются';
     }
     
-    WPForm::render( $fields, get_post_meta( $post->ID, RQ_META_NAME, true ), true );
-    wp_nonce_field( $data['args'][0], $data['args'][0].'_nonce' );
+
+
 }
 
 /**
@@ -242,7 +249,7 @@ function register_review_type(){
     'hierarchical' => false,
     'menu_position' => null,
     'menu_icon'   => 'dashicons-format-status',
-    'supports' => array('title', 'editor', 'excerpt', 'custom-fields', 'page-attributes')
+    'supports' => array('title', 'editor', 'thumbnail', 'excerpt', 'custom-fields', 'page-attributes')
     );
     register_post_type(RQ_TYPE, $args);
 }
