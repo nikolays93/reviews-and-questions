@@ -92,18 +92,22 @@ class WPPostBoxes {
 		if ( ! wp_verify_nonce( $nonce, self::NONCE ) )
 			return $post_id;
 
-		$test = array();
-		$test['post'] = $_POST;
-		$test['metas'] = $this->meta_fields;
-		//file_put_contents(__DIR__ . '/meta_debug.log', print_r($test, 1));
+		// $test = array();
+		// $test['post'] = $_POST;
+		// $test['metas'] = $this->meta_fields;
+		// file_put_contents(__DIR__ . '/meta_debug.log', print_r($test, 1));
 		// if ( ! current_user_can( 'edit_page', $post_id ) )
 		// 	return $post_id;
 
 		foreach ($this->meta_fields as $field) {
-			if(isset($_POST[$field]))
-				update_post_meta( $post_id, $field, sanitize_text_field( $_POST[$field] ) );
-			else
+			if(isset($_POST[$field])){
+				$meta = is_array($_POST[$field]) ?
+				array_filter($_POST[$field], 'sanitize_text_field') : sanitize_text_field( $_POST[$field] );
+				update_post_meta( $post_id, $field, $meta );
+			}
+			else {
 				delete_post_meta( $post_id, $field );
+			}
 		}
 	}
 }

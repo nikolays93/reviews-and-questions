@@ -29,7 +29,6 @@ function metabox_action(){
     $boxes->add_fields( RQ_META_NAME );
 }
 function metabox_render($post, $data){
-    
     $installedInputs = WPForm::active(RQ_PAGE_SLUG, 'inputs', true);
     foreach ($installedInputs as $key => $value) {
         if($value == 'false' || $value == 'off' || ! $value )
@@ -45,18 +44,15 @@ function metabox_render($post, $data){
             }
             else {
                unset($fields[$key]);
-           }
-       }
+            }
+        }
 
-       WPForm::render( $fields, get_post_meta( $post->ID, RQ_META_NAME, true ), true );
-       wp_nonce_field( $data['args'][0], $data['args'][0].'_nonce' );
+        WPForm::render( $fields, get_post_meta( $post->ID, RQ_META_NAME, true ), true );
+        wp_nonce_field( $data['args'][0], $data['args'][0].'_nonce' );
     }
     else {
         echo 'Параметры отзыва не установлены или не требуются';
     }
-    
-
-
 }
 
 /**

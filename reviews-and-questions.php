@@ -86,8 +86,7 @@ function _review_fields(){
 }
 
 include_once RQ_DIR . 'inc/post-type.php';
-include_once RQ_DIR . 'inc/admin-page.php';
-// include_once RQ_DIR . 'inc/metabox.php';
+include_once RQ_DIR . 'inc/settings-page.php';
 include_once RQ_DIR . 'inc/create-post.php';
 include_once RQ_DIR . 'inc/shortcodes.php';
 
@@ -123,6 +122,3 @@ class DTReview
 	// }
 }
 // new DTReview();
-
-
-// u may use DTReview::get_review_options( get_post_id() ); in content template
