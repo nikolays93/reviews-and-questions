@@ -29,7 +29,7 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 namespace RQ;
 
-define('RQ_TYPE', 'review');
+define('RQ_TYPE', 'reviews');
 define('RQ_DIR', plugin_dir_path( __FILE__ ) );
 define('RQ_PAGE_SLUG', 'reviews_and_questions' );
 define('RQ_META_NAME', '_review_data' );
