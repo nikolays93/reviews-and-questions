@@ -96,17 +96,19 @@ $page_render->add_metabox( 'p_type', 'Post Type Settings', 'RQ\post_type_box_cal
 function post_type_box_callback(){
     global $raq_post_type;
 
+    
+
+    // echo "<pre>";
     // var_dump( WPForm::defaults($raq_post_type) );
+    // var_dump(WPForm::active(RQ_PAGE_SLUG, 'post_type'));
+    // echo "</pre>";
 
-    echo "<pre>";
-    var_dump(WPForm::active(RQ_PAGE_SLUG, 'post_type'));
-    echo "</pre>";
-
-    WPForm::render(
-        apply_filters( 'dt_admin_options', $raq_post_type, RQ_PAGE_SLUG . '[post_type]'),
-        WPForm::active(RQ_PAGE_SLUG, 'post_type', true),
-        true
-        );
+    /** @todo: add post type labels settings */
+    // WPForm::render(
+    //     apply_filters( 'dt_admin_options', $raq_post_type, RQ_PAGE_SLUG . '[post_type]'),
+    //     WPForm::active(RQ_PAGE_SLUG, 'post_type', true),
+    //     true
+    //     );
 }
 
 $page_render->set_metaboxes();
