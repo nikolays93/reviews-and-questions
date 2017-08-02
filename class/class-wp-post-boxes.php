@@ -1,5 +1,7 @@
 <?php
-namespace RQ;
+
+if(class_exists('WPPostBoxes'))
+	return;
 
 class WPPostBoxes {
 	const NONCE = 'abra_kadabra_security';
@@ -17,7 +19,7 @@ class WPPostBoxes {
 
 	/**
 	 * Добавляет в массив значения которые нужно сохранять.
-	 * 
+	 *
 	 * @param string $field_name Название (name) значения.
 	 */
 	public function add_fields($field_name){
@@ -42,7 +44,7 @@ class WPPostBoxes {
 	public function add_box($name = false, $output_function = false, $side = false, $priority = 'normal'){
 		if($name)
 			$this->box_name = sanitize_text_field($name);
-		
+
 		if($output_function)
 			$this->output_function = $output_function;
 
@@ -54,7 +56,7 @@ class WPPostBoxes {
 
 	/**
 	 * Обертка WP функции add_meta_box, добавляет метабокс по параметрам класса
-	 * 
+	 *
 	 * @param string $post_type Название используемого типа записи
 	 */
 	function add_meta_box( $post_type ){
@@ -62,10 +64,10 @@ class WPPostBoxes {
 		$post_types = get_post_types(array('_builtin' => false));
 		$add = array('post', 'page');
 		$post_types = array_merge($post_types, $add);
-		
+
 		if(!empty($this->output_function) && !empty($this->box_name)){
 			$side = ($this->side) ? 'side' : 'advanced';
-			
+
 			self::$count++;
 			add_meta_box(
 				'CustomMetaBox-'.self::$count,
