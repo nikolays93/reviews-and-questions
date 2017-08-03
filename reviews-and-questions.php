@@ -37,7 +37,15 @@ class DT_Reviews_Questions {
   }
 
   public static function activate(){
-    add_option( self::SETTINGS, array() );
+    add_option(
+      self::SETTINGS,
+      array('_review_data' => array(
+        'your-name' => 'on',
+        'your-phone' => 'on',
+        'your-email' => 'on',
+        )
+      )
+    );
   }
 
   public static function uninstall(){
@@ -85,7 +93,6 @@ class DT_Reviews_Questions {
       'not_found_in_trash' => 'В корзине нет отзывов',
       'parent_item_colon' => '',
       'menu_name' => 'Отзывы'
-
       );
     $args = array(
       'labels' => $labels,
@@ -121,12 +128,14 @@ class DT_Reviews_Questions {
   /************************************** MetaBoxes *************************************/
   static public function get_instalized_inputs(){
     $active = WPForm::active(self::$settings, '_review_data', true);
+
+    if( ! is_array($active) || sizeof($active) < 1 )
+      return false;
+
     foreach ($active as $key => $value) {
       if($value == 'false' || $value == 'off' || ! $value )
         unset($active[$key]);
     }
-    if( ! is_array($active) || sizeof($active) < 1 )
-      return false;
 
     return array_keys($active);
   }
@@ -209,12 +218,8 @@ class DT_Reviews_Questions {
 
   /********************************** Admin Page Render *********************************/
   static function to_admin_fields( $fields ){
-    $defaults = array('your-name', 'your-phone', 'your-email');
     foreach ($fields as $i => $field) {
       $fields[$i]['type'] = 'checkbox';
-
-      if( in_array($field['id'], $defaults) )
-        $fields[$i]['default'] = 'on';
     }
     return $fields;
   }
@@ -223,7 +228,7 @@ class DT_Reviews_Questions {
     $fields = include RQ_DIR . '/inc/inputs.php';
     WPForm::render(
       self::to_admin_fields($fields),
-      WPForm::active(self::SETTINGS, false, true),
+      WPForm::active(self::SETTINGS, self::METANAME, true),
       true,
       array('admin_page' => self::SETTINGS)
       );

@@ -12,7 +12,7 @@ class DT_Reviews_Questions_RAQ extends DT_Reviews_Questions
   }
 
   function render_tab(){
-    echo "1";
+    echo "Эта страница в разработке";
   }
 
 }
