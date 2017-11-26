@@ -25,6 +25,12 @@ $review_fields = array(
 		'type'  => 'text',
 		'label' => 'Город',
 		),
+    array(
+        'id'    => 'your_rank',
+        'name'  => DT_Reviews_Questions::METANAME . '][your_rank',
+        'type'  => 'text',
+        'label' => 'Должность',
+        ),
         // array(
         //  'id' => 'your_review_rating',
         //  'type' => 'text',
