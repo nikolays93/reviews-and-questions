@@ -232,7 +232,6 @@ class WPAdminPageRender
 
 		<div class="wrap">
 
-			<?php screen_icon(); ?>
 			<h2> <?php echo esc_html($this->args['title']);?> </h2>
 
 			<?php do_action( $this->page . '_after_title'); ?>
