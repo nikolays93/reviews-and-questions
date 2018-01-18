@@ -6,7 +6,7 @@ class DT_Reviews_Questions_WPCF7 extends DT_Reviews_Questions
   {
       parent::$tabs[] = array('WPCF7_TAB', array($this, 'WPCF7_Tab'), 'Contact Form 7');
 
-      add_action('wpcf7_mail_sent', 'create_post_review_from_wpcf', 50, 1 );
+      add_action('wpcf7_mail_sent', array($this, 'create_post_review_from_wpcf'), 50, 1 );
   }
 
   function WPCF7_Tab(){
@@ -46,11 +46,11 @@ class DT_Reviews_Questions_WPCF7 extends DT_Reviews_Questions
   }
 
   function create_post_review_from_wpcf($contact_form){
-    $posted_data = $contact_form->posted_data;
+    // $posted_data = $contact_form->posted_data;
     $submission = \WPCF7_Submission::get_instance();
     $posted_data = $submission->get_posted_data();
 
-    if( ! isset($posted_data[RQ_HOOK_NAME]) )
+    if( ! isset($posted_data[parent::HOOK]) )
       return;
 
     $meta = array();
@@ -61,15 +61,16 @@ class DT_Reviews_Questions_WPCF7 extends DT_Reviews_Questions
       $meta['user_id'] = $current_user->ID;
     }
 
-    $name = $meta[RQ_META_NAME]['your-name'] = (!empty($posted_data['your-name'])) ?
+    $name = $meta[parent::METANAME]['your-name'] = (!empty($posted_data['your-name'])) ?
     sanitize_text_field($posted_data['your-name']) : 'Не указано';
     $meta['user_ip'] = $_SERVER['REMOTE_ADDR'];
     $date = $meta['posted_date'] = date('d.m.Y');
 
-    foreach (_review_fields() as $field) {
+    $fields = include RQ_DIR . '/inc/inputs.php';
+    foreach ($fields as $field) {
       $key = $field['id'];
       if( isset( $posted_data[ $key ] ) && $value = $posted_data[ $key ] ){
-        $meta[RQ_META_NAME][ $key ] = sanitize_text_field($value);
+        $meta[parent::METANAME][ $key ] = sanitize_text_field($value);
       }
     }
 
@@ -82,7 +83,7 @@ class DT_Reviews_Questions_WPCF7 extends DT_Reviews_Questions
       'post_date' => date('Y-m-d H:i:s'),
       'post_excerpt' => '',
       'post_status' => 'pending',
-      'post_type' => RQ_TYPE,
+      'post_type' => self::POST_TYPE,
       'meta_input' => $meta
       );
     wp_insert_post( $new_review, true );
